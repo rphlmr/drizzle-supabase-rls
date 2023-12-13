@@ -1,0 +1,20 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1702473402773,
+      "tag": "0000_yummy_mister_fear",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1702473411685,
+      "tag": "0001_colossal_snowbird",
+      "breakpoints": true
+    }
+  ]
+}

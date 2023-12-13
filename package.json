@@ -1,0 +1,37 @@
+{
+	"name": "drizzle-supabase-rls",
+	"version": "1.0.0",
+	"description": "A playground to test Drizzle and Supabase RLS",
+	"main": "src/index.ts",
+	"scripts": {
+		"start": "dotenv -- tsx src/index.ts",
+		"seed": "run-s seed:*",
+		"seed:schema": "npm run migration:deploy",
+		"seed:data": "dotenv -- tsx drizzle/seed.ts",
+		"migration:generate": "drizzle-kit generate:pg --config drizzle.config.ts",
+		"migration:up": "drizzle-kit up:pg --config drizzle.config.ts",
+		"migration:check": "drizzle-kit up:pg --config drizzle.config.ts",
+		"migration:generate:custom": "drizzle-kit generate:pg --custom --config drizzle.config.ts",
+		"migration:drop": "drizzle-kit drop --config drizzle.config.ts",
+		"migration:deploy": "dotenv -- tsx drizzle/deploy.ts"
+	},
+	"author": "@rphlmr",
+	"license": "ISC",
+	"dependencies": {
+		"@supabase/supabase-js": "^2.39.0",
+		"drizzle-orm": "^0.29.1",
+		"postgres": "^3.4.3"
+	},
+	"devDependencies": {
+		"dotenv-cli": "^7.3.0",
+		"drizzle-kit": "^0.20.6",
+		"npm-run-all": "^4.1.5",
+		"prettier": "^3.1.1",
+		"supabase": "^1.123.4",
+		"tsx": "^4.6.2",
+		"typescript": "^5.3.3"
+	},
+	"engines": {
+		"node": ">=20"
+	}
+}

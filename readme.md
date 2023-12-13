@@ -71,7 +71,7 @@ I have defined some policies on this project (`0001_colossal_snowbird.sql`).
 You can delete them and re-create them in the Drizzle schema.
 
 > **Note**
-> In order to going further, I have created a custom auth function to use in a policies.
+> In order to going further, I have created a custom auth function to use in a policy.
 > It should demonstrate that we can inject any configuration we want in the transaction.
 > 
 > ```sql
@@ -98,7 +98,7 @@ DROP POLICY IF EXISTS "User can only list users of the same faction" ON "public"
 ALTER TABLE "the_table_name" DISABLE ROW LEVEL SECURITY;
 ```
 
-# I am stuck, I have errors on push
+# I am stuck, I have errors when I deploy a migration
 
 Stop Supabase services and delete docker containers/volumes and start again 😂.
 

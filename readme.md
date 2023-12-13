@@ -49,14 +49,10 @@ In your `.env` file, set the following environment variables (from the output ab
 > **Note**
 > We will enable RLS on all table and use the `SUPABASE_ANON_KEY` when a user want to access the data.
 
-### Deploy the migration
+### Deploy migration and seed the DB
 ```bash
-(npm|pnpm|yarn) run migration:deploy
-```
-
-### Seed the database
-```bash
-(npm|pnpm|yarn) run db:seed
+# In a terminal, run
+(npm|pnpm|yarn) run seed
 ```
 
 ## Supabase Dashboard (Studio)
@@ -67,12 +63,6 @@ http://127.0.0.1:54323
 supabase start # Start Supabase services
 supabase stop  # Stop Supabase services
 supabase stop --no-backup # Stop Supabase services and reset your local database
-```
-
-## Deploy migration and seed the DB
-```bash
-# In a terminal, run
-(npm|pnpm|yarn) run seed
 ```
 
 # How to test the incoming Drizzle RLS Support

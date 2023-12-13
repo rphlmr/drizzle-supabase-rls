@@ -19,7 +19,7 @@
 	"license": "ISC",
 	"dependencies": {
 		"@supabase/supabase-js": "^2.39.0",
-		"drizzle-orm": "^0.29.1",
+		"drizzle-orm": "file:/Users/rphlmr/workspaces/rphlmr/drizzle-rls/drizzle-orm/dist",
 		"postgres": "^3.4.3"
 	},
 	"devDependencies": {

@@ -6,7 +6,7 @@
 
 import { createClient } from "@supabase/supabase-js";
 
-function createSupabaseClient(supabaseKey: string, accessToken?: string) {
+function createSupabaseClient(supabaseKey: string) {
 	return createClient(process.env.SUPABASE_API_URL, supabaseKey, {
 		auth: {
 			autoRefreshToken: false,

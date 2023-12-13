@@ -7,10 +7,11 @@
 > Doc: https://supabase.com/docs/guides/cli/local-development
 
 ## Initial setup
-### Install dependencies
-```bash
-(npm|pnpm|yarn) install
-```
+### Test the incoming Drizzle RLS Support
+- Fork (or clone) @Angelelz repo https://github.com/Angelelz/drizzle-orm/tree/feat-rls, checkout the PR branch and `pnpm run build`
+- Then you go to `drizzle-orm/dist` and run `pwd` to get the path
+- Finally, in this project, in the `package.json` file, replace the `drizzle-orm` dependency with the path you got previously. `"drizzle-orm": "file:/your/folder/to/drizzle-orm/dist"`
+- Then run `pnpm install` to install this new dependency
 
 ### Start Supabase services
 ```bash
@@ -52,7 +53,7 @@ In your `.env` file, set the following environment variables (from the output ab
 ### Deploy migration and seed the DB
 ```bash
 # In a terminal, run
-(npm|pnpm|yarn) run seed
+pnpm run seed
 ```
 
 ## Supabase Dashboard (Studio)

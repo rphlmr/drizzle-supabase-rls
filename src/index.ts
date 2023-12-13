@@ -2,7 +2,7 @@ import { describe, it, beforeEach, after } from "node:test";
 import assert from "node:assert";
 import { userSeeds } from "./db/data-seeds";
 import { client, db } from "./db";
-import { faction, quote, user } from "./db/schema";
+import { authenticated, faction, quote, user } from "./db/schema";
 import { seed } from "./db/data-seeds";
 import { eq, sql } from "drizzle-orm";
 import { getUserAuthSession } from "./helper";
@@ -39,6 +39,28 @@ describe("user table", () => {
 
 				return tx.select({ id: user.id }).from(user);
 			});
+
+			assert.equal(results.length, 1);
+		});
+
+		it("[drizzle-rls-support] conforms to RLS when using `rlsConfig` in transaction", async () => {
+			// Let's be closer to the real world and get user id from its auth session
+			const session = await getUserAuthSession("yoda");
+			const setConfig = {
+				rlsConfig: {
+					role: authenticated,
+					set: [
+						{
+							name: "request.jwt.claim.sub",
+							value: session.user.id,
+						},
+					],
+				},
+			};
+
+			const results = await db.transaction(async (tx) => {
+				return tx.select({ id: user.id }).from(user);
+			}, setConfig);
 
 			assert.equal(results.length, 1);
 		});
@@ -101,6 +123,49 @@ describe("user table", () => {
 					.where(eq(user.id, userSeeds.padawan.id))
 					.returning({ id: user.id, name: user.name });
 			});
+
+			assert.equal(otherUserResults.length, 0);
+		});
+
+		it("[drizzle-rls-support] conforms to RLS when using `set_config` in transaction", async () => {
+			// Let's be closer to the real world and get user id from its auth session
+			const session = await getUserAuthSession("yoda");
+			const newName = "Master Yoda";
+			const setConfig = {
+				rlsConfig: {
+					role: authenticated,
+					set: [
+						{
+							name: "request.jwt.claim.sub",
+							value: session.user.id,
+						},
+					],
+				},
+			};
+
+			const results = await db.transaction(async (tx) => {
+				return tx
+					.update(user)
+					.set({ name: newName })
+					.where(eq(user.id, session.user.id)) // better for performance even if RLS makes it useless
+					.returning({ id: user.id, name: user.name });
+			}, setConfig);
+
+			assert.equal(results.length, 1);
+
+			const [updatedUser] = results;
+
+			assert.equal(updatedUser.id, session.user.id);
+			assert.equal(updatedUser.name, newName);
+
+			// can't update another user
+			const otherUserResults = await db.transaction(async (tx) => {
+				return tx
+					.update(user)
+					.set({ name: newName })
+					.where(eq(user.id, userSeeds.padawan.id))
+					.returning({ id: user.id, name: user.name });
+			}, setConfig);
 
 			assert.equal(otherUserResults.length, 0);
 		});
@@ -183,6 +248,30 @@ describe("quote table", () => {
 			assert.equal(results.length, Object.keys(userSeeds).length);
 		});
 
+		it("[drizzle-rls-support] conforms to RLS when using `set_config` in transaction", async () => {
+			// Let's be closer to the real world and get user id from its auth session
+			const session = await getUserAuthSession("yoda");
+			const setConfig = {
+				rlsConfig: {
+					role: authenticated,
+					set: [
+						{
+							name: "request.jwt.claim.sub",
+							value: session.user.id,
+						},
+					],
+				},
+			};
+
+			const results = await db.transaction(async (tx) => {
+				return tx
+					.select({ text: quote.text, authorId: quote.authorId })
+					.from(quote);
+			}, setConfig);
+
+			assert.equal(results.length, Object.keys(userSeeds).length);
+		});
+
 		it("bypass RLS when using transaction with no config", async () => {
 			const results = await db.transaction(async (tx) => {
 				return tx
@@ -253,6 +342,56 @@ describe("quote table", () => {
 							authorId: quote.authorId,
 						});
 				}),
+			);
+		});
+
+		it("[before-drizzle-rls-support] conforms to RLS when using `set_config` in transaction", async () => {
+			// Let's be closer to the real world and get user id from its auth session
+			const session = await getUserAuthSession("yoda");
+			const newQuote = "Always in motion is the future";
+			const setConfig = {
+				rlsConfig: {
+					role: authenticated,
+					set: [
+						{
+							name: "request.jwt.claim.sub",
+							value: session.user.id,
+						},
+					],
+				},
+			};
+
+			const results = await db.transaction(async (tx) => {
+				return tx
+					.insert(quote)
+					.values({ text: newQuote, authorId: session.user.id })
+					.returning({
+						text: quote.text,
+						authorId: quote.authorId,
+					});
+			}, setConfig);
+
+			assert.equal(results.length, 1);
+
+			const [newUserQuote] = results;
+
+			assert.equal(newUserQuote.authorId, session.user.id);
+			assert.equal(newUserQuote.text, newQuote);
+
+			// can't add a quote for another user
+			await assert.rejects(
+				db.transaction(async (tx) => {
+					return tx
+						.insert(quote)
+						.values({
+							text: newQuote,
+							authorId: userSeeds.padawan.id,
+						})
+						.returning({
+							text: quote.text,
+							authorId: quote.authorId,
+						});
+				}, setConfig),
 			);
 		});
 
@@ -365,6 +504,49 @@ describe("quote table", () => {
 			assert.equal(otherUserResults.length, 0);
 		});
 
+		it("[drizzle-rls-support] conforms to RLS when using `set_config` in transaction", async () => {
+			// Let's be closer to the real world and get user id from its auth session
+			const session = await getUserAuthSession("yoda");
+			const setConfig = {
+				rlsConfig: {
+					role: authenticated,
+					set: [
+						{
+							name: "request.jwt.claim.sub",
+							value: session.user.id,
+						},
+					],
+				},
+			};
+
+			const results = await db.transaction(async (tx) => {
+				return tx
+					.delete(quote)
+					.where(eq(quote.authorId, session.user.id))
+					.returning({
+						authorId: quote.authorId,
+					});
+			}, setConfig);
+
+			assert.equal(results.length, 1);
+
+			const [deletedQuote] = results;
+
+			assert.equal(deletedQuote.authorId, session.user.id);
+
+			// can't delete another user quote
+			const otherUserResults = await db.transaction(async (tx) => {
+				return tx
+					.delete(quote)
+					.where(eq(quote.authorId, userSeeds.padawan.id))
+					.returning({
+						authorId: quote.authorId,
+					});
+			}, setConfig);
+
+			assert.equal(otherUserResults.length, 0);
+		});
+
 		it("bypass RLS when using transaction with no config", async () => {
 			// Let's be closer to the real world and get user id from its auth session
 			const session = await getUserAuthSession("yoda");
@@ -446,6 +628,40 @@ describe("faction table", () => {
 					.select({ userId: faction.userId, name: faction.name })
 					.from(faction);
 			});
+
+			assert.equal(results.length, 2);
+
+			const factions = results.map((r) => r.userId);
+
+			assert.ok(factions.includes(userSeeds.yoda.id));
+			assert.ok(factions.includes(userSeeds.padawan.id));
+		});
+
+		it("[drizzle-rls-support] conforms to RLS when using `set_config` in transaction", async () => {
+			// Let's be closer to the real world and get user id from its auth session
+			const session = await getUserAuthSession("yoda");
+			const factionName = userSeeds.yoda.faction;
+			const setConfig = {
+				rlsConfig: {
+					role: authenticated,
+					set: [
+						{
+							name: "request.jwt.claim.sub",
+							value: session.user.id,
+						},
+						{
+							name: "user.faction",
+							value: factionName,
+						},
+					],
+				},
+			};
+
+			const results = await db.transaction(async (tx) => {
+				return tx
+					.select({ userId: faction.userId, name: faction.name })
+					.from(faction);
+			}, setConfig);
 
 			assert.equal(results.length, 2);
 

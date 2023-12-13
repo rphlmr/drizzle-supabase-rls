@@ -1,9 +1,12 @@
+import { sql } from "drizzle-orm";
 import { pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { pgPolicy } from "drizzle-orm/pg-core/policy";
+import { pgRole } from "drizzle-orm/pg-core/role";
 
 export const user = pgTable("user", {
 	id: uuid("id").primaryKey().notNull(),
 	name: text("name").notNull(),
-});
+}).enableRLS();
 
 export const quote = pgTable("quote", {
 	id: uuid("id").primaryKey().defaultRandom(),
@@ -11,7 +14,7 @@ export const quote = pgTable("quote", {
 	authorId: uuid("author_id")
 		.references(() => user.id, { onDelete: "cascade" })
 		.notNull(),
-});
+}).enableRLS();
 
 export const faction = pgTable("faction", {
 	userId: uuid("user_id")
@@ -19,14 +22,16 @@ export const faction = pgTable("faction", {
 		.references(() => user.id, { onDelete: "cascade" })
 		.notNull(),
 	name: text("name", { enum: ["republic", "empire"] }).notNull(),
-});
+}).enableRLS();
 
 /* -------------------------------------------------------------------------- */
 /*                           Future implementation;                           */
 /* -------------------------------------------------------------------------- */
 
+export const authenticated = pgRole("authenticated");
+
 // TODO: replace implementation
-function pgPolicy(p1: any, p2: any, p3: any) {}
+// function pgPolicy(p1: any, p2: any, p3: any) {}
 
 // CREATE POLICY "User can only read its row" ON "public"."user" AS PERMISSIVE FOR
 // SELECT TO authenticated USING (
@@ -39,8 +44,8 @@ function pgPolicy(p1: any, p2: any, p3: any) {}
 export const userReadPolicy = pgPolicy("User can only read its row", user, {
 	as: "permissive",
 	for: "select",
-	to: "authenticated",
-	using: "(SELECT auth.uid()) = id",
+	to: [authenticated],
+	using: sql`(SELECT auth.uid()) = id`,
 });
 
 // CREATE POLICY "User can update its name" ON "public"."user"
@@ -51,9 +56,9 @@ export const userReadPolicy = pgPolicy("User can only read its row", user, {
 export const userUpdatePolicy = pgPolicy("User can update its name", user, {
 	as: "permissive",
 	for: "update",
-	to: "authenticated",
-	using: "(SELECT auth.uid()) = id",
-	withCheck: "(SELECT auth.uid()) = id",
+	to: [authenticated],
+	using: sql`(SELECT auth.uid()) = id`,
+	withCheck: sql`(SELECT auth.uid()) = id`,
 });
 
 // CREATE POLICY "User can read all quotes" ON "public"."quote" AS PERMISSIVE FOR
@@ -61,8 +66,8 @@ export const userUpdatePolicy = pgPolicy("User can update its name", user, {
 export const quoteReadPolicy = pgPolicy("User can read all quotes", quote, {
 	as: "permissive",
 	for: "select",
-	to: "authenticated",
-	using: "true",
+	to: [authenticated],
+	using: sql`true`,
 });
 
 // CREATE POLICY "User can insert quotes" ON "public"."quote"
@@ -73,8 +78,8 @@ export const quoteReadPolicy = pgPolicy("User can read all quotes", quote, {
 export const quoteInsertPolicy = pgPolicy("User can insert quotes", quote, {
 	as: "permissive",
 	for: "insert",
-	to: "authenticated",
-	withCheck: "(SELECT auth.uid()) = author_id",
+	to: [authenticated],
+	withCheck: sql`(SELECT auth.uid()) = author_id`,
 });
 
 // CREATE POLICY "User can delete its quotes" ON "public"."quote" AS PERMISSIVE FOR DELETE TO public USING (
@@ -85,8 +90,8 @@ export const quoteInsertPolicy = pgPolicy("User can insert quotes", quote, {
 export const quoteDeletePolicy = pgPolicy("User can delete its quotes", quote, {
 	as: "permissive",
 	for: "insert",
-	to: "authenticated",
-	using: "(SELECT auth.uid()) = author_id",
+	to: [authenticated],
+	using: sql`(SELECT auth.uid()) = author_id`,
 });
 
 // CREATE POLICY "User can only list users of the same faction" ON "public"."faction" AS PERMISSIVE FOR
@@ -101,7 +106,7 @@ export const factionInsertPolicy = pgPolicy(
 	{
 		as: "permissive",
 		for: "insert",
-		to: "authenticated",
-		using: "(SELECT auth.faction()) = name",
+		to: [authenticated],
+		using: sql`(SELECT auth.faction()) = name`,
 	},
 );

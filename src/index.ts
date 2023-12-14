@@ -46,7 +46,7 @@ describe("user table", () => {
 		it("[drizzle-rls-support] conforms to RLS when using `rlsConfig` in transaction", async () => {
 			// Let's be closer to the real world and get user id from its auth session
 			const session = await getUserAuthSession("yoda");
-			const setConfig = {
+			const txConfig = {
 				rlsConfig: {
 					role: authenticated,
 					set: [
@@ -60,7 +60,7 @@ describe("user table", () => {
 
 			const results = await db.transaction(async (tx) => {
 				return tx.select({ id: user.id }).from(user);
-			}, setConfig);
+			}, txConfig);
 
 			assert.equal(results.length, 1);
 		});
@@ -131,7 +131,7 @@ describe("user table", () => {
 			// Let's be closer to the real world and get user id from its auth session
 			const session = await getUserAuthSession("yoda");
 			const newName = "Master Yoda";
-			const setConfig = {
+			const txConfig = {
 				rlsConfig: {
 					role: authenticated,
 					set: [
@@ -149,7 +149,7 @@ describe("user table", () => {
 					.set({ name: newName })
 					.where(eq(user.id, session.user.id)) // better for performance even if RLS makes it useless
 					.returning({ id: user.id, name: user.name });
-			}, setConfig);
+			}, txConfig);
 
 			assert.equal(results.length, 1);
 
@@ -165,7 +165,7 @@ describe("user table", () => {
 					.set({ name: newName })
 					.where(eq(user.id, userSeeds.padawan.id))
 					.returning({ id: user.id, name: user.name });
-			}, setConfig);
+			}, txConfig);
 
 			assert.equal(otherUserResults.length, 0);
 		});
@@ -251,7 +251,7 @@ describe("quote table", () => {
 		it("[drizzle-rls-support] conforms to RLS when using `set_config` in transaction", async () => {
 			// Let's be closer to the real world and get user id from its auth session
 			const session = await getUserAuthSession("yoda");
-			const setConfig = {
+			const txConfig = {
 				rlsConfig: {
 					role: authenticated,
 					set: [
@@ -267,7 +267,7 @@ describe("quote table", () => {
 				return tx
 					.select({ text: quote.text, authorId: quote.authorId })
 					.from(quote);
-			}, setConfig);
+			}, txConfig);
 
 			assert.equal(results.length, Object.keys(userSeeds).length);
 		});
@@ -349,7 +349,7 @@ describe("quote table", () => {
 			// Let's be closer to the real world and get user id from its auth session
 			const session = await getUserAuthSession("yoda");
 			const newQuote = "Always in motion is the future";
-			const setConfig = {
+			const txConfig = {
 				rlsConfig: {
 					role: authenticated,
 					set: [
@@ -369,7 +369,7 @@ describe("quote table", () => {
 						text: quote.text,
 						authorId: quote.authorId,
 					});
-			}, setConfig);
+			}, txConfig);
 
 			assert.equal(results.length, 1);
 
@@ -391,7 +391,7 @@ describe("quote table", () => {
 							text: quote.text,
 							authorId: quote.authorId,
 						});
-				}, setConfig),
+				}, txConfig),
 			);
 		});
 
@@ -507,7 +507,7 @@ describe("quote table", () => {
 		it("[drizzle-rls-support] conforms to RLS when using `set_config` in transaction", async () => {
 			// Let's be closer to the real world and get user id from its auth session
 			const session = await getUserAuthSession("yoda");
-			const setConfig = {
+			const txConfig = {
 				rlsConfig: {
 					role: authenticated,
 					set: [
@@ -526,7 +526,7 @@ describe("quote table", () => {
 					.returning({
 						authorId: quote.authorId,
 					});
-			}, setConfig);
+			}, txConfig);
 
 			assert.equal(results.length, 1);
 
@@ -542,7 +542,7 @@ describe("quote table", () => {
 					.returning({
 						authorId: quote.authorId,
 					});
-			}, setConfig);
+			}, txConfig);
 
 			assert.equal(otherUserResults.length, 0);
 		});
@@ -641,7 +641,7 @@ describe("faction table", () => {
 			// Let's be closer to the real world and get user id from its auth session
 			const session = await getUserAuthSession("yoda");
 			const factionName = userSeeds.yoda.faction;
-			const setConfig = {
+			const txConfig = {
 				rlsConfig: {
 					role: authenticated,
 					set: [
@@ -661,7 +661,7 @@ describe("faction table", () => {
 				return tx
 					.select({ userId: faction.userId, name: faction.name })
 					.from(faction);
-			}, setConfig);
+			}, txConfig);
 
 			assert.equal(results.length, 2);
 

@@ -20,6 +20,7 @@
 	"dependencies": {
 		"@supabase/supabase-js": "^2.39.0",
 		"drizzle-orm": "file:/Users/rphlmr/workspaces/rphlmr/drizzle-rls/drizzle-orm/dist",
+		"jwt-decode": "^4.0.0",
 		"postgres": "^3.4.3"
 	},
 	"devDependencies": {

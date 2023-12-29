@@ -6,6 +6,7 @@ import { authenticated, faction, quote, user } from "./db/schema";
 import { seed } from "./db/data-seeds";
 import { eq, sql } from "drizzle-orm";
 import { getUserAuthSession } from "./helper";
+import { jwtDecode } from "jwt-decode";
 
 async function resetDB() {
 	// Delete all (cascade)
@@ -31,8 +32,8 @@ describe("user table", () => {
 
 			const results = await db.transaction(async (tx) => {
 				await tx.execute(
-					sql`SELECT set_config('request.jwt.claim.sub', '${sql.raw(
-						session.user.id,
+					sql`SELECT set_config('request.jwt.claims', '${sql.raw(
+						JSON.stringify(jwtDecode(session.access_token)),
 					)}', TRUE)`,
 				);
 				await tx.execute(sql`set local role authenticated`);
@@ -51,8 +52,10 @@ describe("user table", () => {
 					role: authenticated,
 					set: [
 						{
-							name: "request.jwt.claim.sub",
-							value: session.user.id,
+							name: "request.jwt.claims",
+							value: JSON.stringify(
+								jwtDecode(session.access_token),
+							),
 						},
 					],
 				},
@@ -88,8 +91,8 @@ describe("user table", () => {
 
 			const results = await db.transaction(async (tx) => {
 				await tx.execute(
-					sql`SELECT set_config('request.jwt.claim.sub', '${sql.raw(
-						session.user.id,
+					sql`SELECT set_config('request.jwt.claims', '${sql.raw(
+						JSON.stringify(jwtDecode(session.access_token)),
 					)}', TRUE)`,
 				);
 				await tx.execute(sql`set local role authenticated`);
@@ -111,8 +114,8 @@ describe("user table", () => {
 			// can't update another user
 			const otherUserResults = await db.transaction(async (tx) => {
 				await tx.execute(
-					sql`SELECT set_config('request.jwt.claim.sub', '${sql.raw(
-						session.user.id,
+					sql`SELECT set_config('request.jwt.claims', '${sql.raw(
+						JSON.stringify(jwtDecode(session.access_token)),
 					)}', TRUE)`,
 				);
 				await tx.execute(sql`set local role authenticated`);
@@ -136,8 +139,10 @@ describe("user table", () => {
 					role: authenticated,
 					set: [
 						{
-							name: "request.jwt.claim.sub",
-							value: session.user.id,
+							name: "request.jwt.claims",
+							value: JSON.stringify(
+								jwtDecode(session.access_token),
+							),
 						},
 					],
 				},
@@ -234,8 +239,8 @@ describe("quote table", () => {
 
 			const results = await db.transaction(async (tx) => {
 				await tx.execute(
-					sql`SELECT set_config('request.jwt.claim.sub', '${sql.raw(
-						session.user.id,
+					sql`SELECT set_config('request.jwt.claims', '${sql.raw(
+						JSON.stringify(jwtDecode(session.access_token)),
 					)}', TRUE)`,
 				);
 				await tx.execute(sql`set local role authenticated`);
@@ -256,8 +261,10 @@ describe("quote table", () => {
 					role: authenticated,
 					set: [
 						{
-							name: "request.jwt.claim.sub",
-							value: session.user.id,
+							name: "request.jwt.claims",
+							value: JSON.stringify(
+								jwtDecode(session.access_token),
+							),
 						},
 					],
 				},
@@ -299,8 +306,8 @@ describe("quote table", () => {
 
 			const results = await db.transaction(async (tx) => {
 				await tx.execute(
-					sql`SELECT set_config('request.jwt.claim.sub', '${sql.raw(
-						session.user.id,
+					sql`SELECT set_config('request.jwt.claims', '${sql.raw(
+						JSON.stringify(jwtDecode(session.access_token)),
 					)}', TRUE)`,
 				);
 				await tx.execute(sql`set local role authenticated`);
@@ -325,8 +332,8 @@ describe("quote table", () => {
 			await assert.rejects(
 				db.transaction(async (tx) => {
 					await tx.execute(
-						sql`SELECT set_config('request.jwt.claim.sub', '${sql.raw(
-							session.user.id,
+						sql`SELECT set_config('request.jwt.claims', '${sql.raw(
+							JSON.stringify(jwtDecode(session.access_token)),
 						)}', TRUE)`,
 					);
 					await tx.execute(sql`set local role authenticated`);
@@ -354,8 +361,10 @@ describe("quote table", () => {
 					role: authenticated,
 					set: [
 						{
-							name: "request.jwt.claim.sub",
-							value: session.user.id,
+							name: "request.jwt.claims",
+							value: JSON.stringify(
+								jwtDecode(session.access_token),
+							),
 						},
 					],
 				},
@@ -464,8 +473,8 @@ describe("quote table", () => {
 
 			const results = await db.transaction(async (tx) => {
 				await tx.execute(
-					sql`SELECT set_config('request.jwt.claim.sub', '${sql.raw(
-						session.user.id,
+					sql`SELECT set_config('request.jwt.claims', '${sql.raw(
+						JSON.stringify(jwtDecode(session.access_token)),
 					)}', TRUE)`,
 				);
 				await tx.execute(sql`set local role authenticated`);
@@ -487,8 +496,8 @@ describe("quote table", () => {
 			// can't delete another user quote
 			const otherUserResults = await db.transaction(async (tx) => {
 				await tx.execute(
-					sql`SELECT set_config('request.jwt.claim.sub', '${sql.raw(
-						session.user.id,
+					sql`SELECT set_config('request.jwt.claims', '${sql.raw(
+						JSON.stringify(jwtDecode(session.access_token)),
 					)}', TRUE)`,
 				);
 				await tx.execute(sql`set local role authenticated`);
@@ -512,8 +521,10 @@ describe("quote table", () => {
 					role: authenticated,
 					set: [
 						{
-							name: "request.jwt.claim.sub",
-							value: session.user.id,
+							name: "request.jwt.claims",
+							value: JSON.stringify(
+								jwtDecode(session.access_token),
+							),
 						},
 					],
 				},
@@ -612,8 +623,8 @@ describe("faction table", () => {
 
 			const results = await db.transaction(async (tx) => {
 				await tx.execute(
-					sql`SELECT set_config('request.jwt.claim.sub', '${sql.raw(
-						session.user.id,
+					sql`SELECT set_config('request.jwt.claims', '${sql.raw(
+						JSON.stringify(jwtDecode(session.access_token)),
 					)}', TRUE)`,
 				);
 				// custom auth function used in the policy
@@ -646,8 +657,10 @@ describe("faction table", () => {
 					role: authenticated,
 					set: [
 						{
-							name: "request.jwt.claim.sub",
-							value: session.user.id,
+							name: "request.jwt.claims",
+							value: JSON.stringify(
+								jwtDecode(session.access_token),
+							),
 						},
 						{
 							name: "user.faction",

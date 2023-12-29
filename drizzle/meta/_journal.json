@@ -15,6 +15,13 @@
       "when": 1702473411685,
       "tag": "0001_colossal_snowbird",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1703847662559,
+      "tag": "0002_hesitant_thor_girl",
+      "breakpoints": true
     }
   ]
 }

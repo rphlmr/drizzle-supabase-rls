@@ -1,10 +1,19 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { pgSchema, pgTable, text, uuid } from "drizzle-orm/pg-core";
 import { pgPolicy } from "drizzle-orm/pg-core/policy";
 import { pgRole } from "drizzle-orm/pg-core/role";
 
-export const user = pgTable("user", {
+export const authSchema = pgSchema("auth");
+
+export const authUsers = authSchema.table("users", {
 	id: uuid("id").primaryKey().notNull(),
+});
+
+export const user = pgTable("user", {
+	id: uuid("id")
+		.primaryKey()
+		.notNull()
+		.references(() => authUsers.id, { onDelete: "cascade" }),
 	name: text("name").notNull(),
 }).enableRLS();
 

@@ -22,7 +22,7 @@ export const rooms = pgTable(
     topic: text().notNull(),
   },
   (table) => [unique("rooms_topic_key").on(table.topic)]
-);
+).enableRLS();
 
 export const profiles = pgTable(
   "profiles",
@@ -37,7 +37,7 @@ export const profiles = pgTable(
       name: "profiles_id_fk",
     }).onDelete("cascade"),
   ]
-);
+).enableRLS();
 
 export const rooms_users = pgTable(
   "rooms_users",
@@ -63,4 +63,4 @@ export const rooms_users = pgTable(
       name: "rooms_users_room_topic_fk",
     }),
   ]
-);
+).enableRLS();

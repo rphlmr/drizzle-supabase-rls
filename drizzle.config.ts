@@ -15,9 +15,11 @@ export default defineConfig({
   out: `${base}/migrations`,
   verbose: false,
   schemaFilter: ["public"],
+  casing: "snake_case",
   entities: {
     roles: {
       provider: "supabase",
+      exclude: ["supabase_auth_admin"],
     },
   },
 });

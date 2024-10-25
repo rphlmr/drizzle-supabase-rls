@@ -1,0 +1,269 @@
+{
+  "id": "473616ac-a7f6-4dc7-942e-f1b2d7afc393",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.profiles": {
+      "name": "profiles",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "profiles_id_fk": {
+          "name": "profiles_id_fk",
+          "tableFrom": "profiles",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "authenticated can view all profiles": {
+          "name": "authenticated can view all profiles",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "true"
+        },
+        "supabase_auth_admin can insert profile": {
+          "name": "supabase_auth_admin can insert profile",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "supabase_auth_admin"
+          ],
+          "withCheck": "true"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "realtime.messages": {
+      "name": "messages",
+      "schema": "realtime",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigserial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "topic": {
+          "name": "topic",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "extension": {
+          "name": "extension",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "authenticated can read broadcast and presence state": {
+          "name": "authenticated can read broadcast and presence state",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "exists (\n\t\t\t\t\tselect 1 from \"rooms_users\" where \n\t\t\t\t\t(\"rooms_users\".\"user_id\" = (select auth.uid()) and \"rooms_users\".\"room_topic\" = realtime.topic() and \"messages\".\"extension\" in ('presence', 'broadcast'))\n\t\t\t\t)"
+        },
+        "authenticated can send broadcast and track presence": {
+          "name": "authenticated can send broadcast and track presence",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "exists (\n\t\t\t\t\tselect 1 from \"rooms_users\" where \n\t\t\t\t\t(\"rooms_users\".\"user_id\" = (select auth.uid()) and \"rooms_users\".\"room_topic\" = realtime.topic() and \"messages\".\"extension\" in ('presence', 'broadcast'))\n\t\t\t\t)"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.rooms": {
+      "name": "rooms",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "byDefault",
+            "name": "rooms_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "9223372036854775807",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "topic": {
+          "name": "topic",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "rooms_topic_key": {
+          "name": "rooms_topic_key",
+          "nullsNotDistinct": false,
+          "columns": [
+            "topic"
+          ]
+        }
+      },
+      "policies": {
+        "authenticated can read rooms": {
+          "name": "authenticated can read rooms",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "true"
+        },
+        "authenticated can add rooms": {
+          "name": "authenticated can add rooms",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "true"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.rooms_users": {
+      "name": "rooms_users",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "room_topic": {
+          "name": "room_topic",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "joined_at": {
+          "name": "joined_at",
+          "type": "timestamp(3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "rooms_users_user_id_fk": {
+          "name": "rooms_users_user_id_fk",
+          "tableFrom": "rooms_users",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "rooms_users_room_topic_fk": {
+          "name": "rooms_users_room_topic_fk",
+          "tableFrom": "rooms_users",
+          "tableTo": "rooms",
+          "columnsFrom": [
+            "room_topic"
+          ],
+          "columnsTo": [
+            "topic"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "authenticated can read rooms_users": {
+          "name": "authenticated can read rooms_users",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "true"
+        },
+        "authenticated can add rooms_users": {
+          "name": "authenticated can add rooms_users",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "true"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

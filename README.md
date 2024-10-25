@@ -11,13 +11,14 @@ Build a chat system using Realtime Broadcast with Authorized Channels where user
 Each room restricts the number of users authorized by applying RLS Policies applied to `public` schema tables you'll be creating and the auto-generated `realtime` schema tables.
 
 ## Run It
-
-1. Create a `.env.local` file with the required variables by running `cp .env.example .env.local`.
-2. [Create a new Supabase project](https://supabase.com/dashboard/new/_).
-3. Refer to the [Database Setup](#database-setup) section to create the necessary tables and policies.
-4. Copy the project's `URL` and `anon` API key from your project's [API Settings](https://supabase.com/dashboard/project/_/settings/api), and paste them into your `.env.local`.
-5. `npm install`
-6. `npm run dev`
+0. Install Supabase CLI to self host the demo https://supabase.com/docs/guides/local-development/cli/getting-started
+1. `supabase start`
+2. Create a `.env.local` file with the required variables by running `cp .env.example .env.local`.
+3. [Create a new Supabase project](https://supabase.com/dashboard/new/_).
+4. Refer to the [Database Setup](#database-setup) section to create the necessary tables and policies.
+5. Copy the project's `URL` and `anon` API key from your project's [API Settings](https://supabase.com/dashboard/project/_/settings/api), and paste them into your `.env.local`.
+6. `npm install`
+7. `npm run dev`
 
 ## How It Looks
 

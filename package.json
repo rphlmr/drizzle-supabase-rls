@@ -33,5 +33,6 @@
     "dotenv-cli": "^7.4.2",
     "drizzle-kit": "^0.26.2-05e88e4",
     "encoding": "^0.1.13"
-  }
+  },
+  "prettier": {}
 }

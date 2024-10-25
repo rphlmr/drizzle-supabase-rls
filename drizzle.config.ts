@@ -14,4 +14,10 @@ export default defineConfig({
   schema: `${base}/schema.ts`,
   out: `${base}/migrations`,
   verbose: false,
+  schemaFilter: ["public"],
+  entities: {
+    roles: {
+      provider: "supabase",
+    },
+  },
 });

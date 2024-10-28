@@ -1,6 +1,6 @@
 {
-  "id": "93afe1e9-2201-4ef7-b97e-8c5a3b6079b5",
-  "prevId": "3ab094bc-f3f4-48e1-8006-aa86a11744fa",
+  "id": "6a33a92b-aa8e-41bb-9a58-f903020d7672",
+  "prevId": "bdf76278-2f12-4841-946d-a1981cf1be1e",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -58,56 +58,6 @@
             "supabase_auth_admin"
           ],
           "withCheck": "true"
-        }
-      },
-      "checkConstraints": {},
-      "isRLSEnabled": true
-    },
-    "realtime.messages": {
-      "name": "messages",
-      "schema": "realtime",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "bigserial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "topic": {
-          "name": "topic",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "extension": {
-          "name": "extension",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {
-        "authenticated can read broadcast and presence state": {
-          "name": "authenticated can read broadcast and presence state",
-          "as": "PERMISSIVE",
-          "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
-          "using": "exists (\n\t\t\t\t\tselect 1 from \"rooms_users\" where \n\t\t\t\t\t(\"rooms_users\".\"user_id\" = (select auth.uid()) and \"rooms_users\".\"room_topic\" = realtime.topic() and \"messages\".\"extension\" in ('presence', 'broadcast'))\n\t\t\t\t)"
-        },
-        "authenticated can send broadcast and track presence": {
-          "name": "authenticated can send broadcast and track presence",
-          "as": "PERMISSIVE",
-          "for": "INSERT",
-          "to": [
-            "authenticated"
-          ],
-          "withCheck": "exists (\n\t\t\t\t\tselect 1 from \"rooms_users\" where \n\t\t\t\t\t(\"rooms_users\".\"user_id\" = (select auth.uid()) and \"rooms_users\".\"room_topic\" = realtime.topic() and \"messages\".\"extension\" in ('presence', 'broadcast'))\n\t\t\t\t)"
         }
       },
       "checkConstraints": {},
@@ -174,7 +124,7 @@
         }
       },
       "checkConstraints": {},
-      "isRLSEnabled": true
+      "isRLSEnabled": false
     },
     "public.rooms_users": {
       "name": "rooms_users",
@@ -253,7 +203,7 @@
         }
       },
       "checkConstraints": {},
-      "isRLSEnabled": true
+      "isRLSEnabled": false
     }
   },
   "enums": {},
@@ -261,6 +211,28 @@
   "views": {},
   "sequences": {},
   "roles": {},
+  "policies": {
+    "authenticated can read broadcast and presence state": {
+      "name": "authenticated can read broadcast and presence state",
+      "as": "PERMISSIVE",
+      "for": "SELECT",
+      "to": [
+        "authenticated"
+      ],
+      "using": "exists (\n      select 1 from \"rooms_users\" where \n      (\"rooms_users\".\"user_id\" = (select auth.uid()) and \"rooms_users\".\"room_topic\" = realtime.topic() and \"messages\".\"extension\" in ('presence', 'broadcast'))\n    )",
+      "on": "\"realtime\".\"messages\""
+    },
+    "authenticated can send broadcast and track presence": {
+      "name": "authenticated can send broadcast and track presence",
+      "as": "PERMISSIVE",
+      "for": "INSERT",
+      "to": [
+        "authenticated"
+      ],
+      "withCheck": "exists (\n      select 1 from \"rooms_users\" where \n      (\"rooms_users\".\"user_id\" = auth.uid() and \"rooms_users\".\"room_topic\" = realtime.topic() and \"messages\".\"extension\" in ('presence', 'broadcast'))\n    )",
+      "on": "\"realtime\".\"messages\""
+    }
+  },
   "_meta": {
     "columns": {},
     "schemas": {},

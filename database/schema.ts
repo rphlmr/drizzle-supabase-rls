@@ -12,65 +12,25 @@ import {
   pgRole,
   bigserial,
 } from "drizzle-orm/pg-core";
-import { authenticatedRole, serviceRole } from "drizzle-orm/supabase";
-
-export const supabaseAuthAdminRole = pgRole("supabase_auth_admin").existing();
+import {
+  authenticatedRole,
+  authUsers,
+  realtimeMessages,
+  realtimeTopic,
+  supabaseAuthAdminRole,
+} from "drizzle-orm/supabase";
 
 /* ------------------------------ auth schema; ------------------------------ */
 const auth = {
   schema: pgSchema("auth"),
   uid: () => "auth.uid()",
 };
-const authUsers = auth.schema.table("users", {
-  id: uuid().primaryKey().notNull(),
-});
 
 /* ------------------------------ realtime schema; ------------------------------ */
 const realtime = {
   schema: pgSchema("realtime"),
   topic: () => "realtime.topic()",
 };
-
-export const realtimeMessages = realtime.schema.table(
-  "messages",
-  {
-    id: bigserial({ mode: "bigint" }).primaryKey(),
-    topic: text().notNull(),
-    extension: text({
-      enum: ["presence", "broadcast", "postgres_changes"],
-    }).notNull(),
-  },
-  (table) => [
-    pgPolicy("authenticated can read broadcast and presence state", {
-      for: "select",
-      to: authenticatedRole,
-      using: exists(
-        sql`(
-					select 1 from ${roomsUsers} where 
-					${and(
-            eq(roomsUsers.userId, sql.raw(`(select ${auth.uid()})`)),
-            eq(roomsUsers.roomTopic, sql.raw(realtime.topic())),
-            inArray(table.extension, ["presence", "broadcast"]).inlineParams()
-          )}
-				)`
-      ),
-    }),
-    pgPolicy("authenticated can send broadcast and track presence", {
-      for: "insert",
-      to: authenticatedRole,
-      withCheck: exists(
-        sql`(
-					select 1 from ${roomsUsers} where 
-					${and(
-            eq(roomsUsers.userId, sql.raw(`(select ${auth.uid()})`)),
-            eq(roomsUsers.roomTopic, sql.raw(realtime.topic())),
-            inArray(table.extension, ["presence", "broadcast"]).inlineParams()
-          )}
-				)`
-      ),
-    }),
-  ]
-);
 
 /* ------------------------------ public schema; ------------------------------ */
 
@@ -93,7 +53,7 @@ export const rooms = pgTable(
       withCheck: sql`true`,
     }),
   ]
-).enableRLS();
+);
 
 export type Room = typeof rooms.$inferSelect;
 
@@ -120,7 +80,7 @@ export const profiles = pgTable(
       withCheck: sql`true`,
     }),
   ]
-).enableRLS();
+);
 
 export const roomsUsers = pgTable(
   "rooms_users",
@@ -156,4 +116,46 @@ export const roomsUsers = pgTable(
       withCheck: sql`true`,
     }),
   ]
-).enableRLS();
+);
+
+export const P1 = pgPolicy(
+  "authenticated can read broadcast and presence state",
+  {
+    for: "select",
+    to: authenticatedRole,
+    using: exists(
+      sql`(
+      select 1 from ${roomsUsers} where 
+      ${and(
+        eq(roomsUsers.userId, sql.raw(`(select ${auth.uid()})`)),
+        eq(roomsUsers.roomTopic, sql.raw(realtime.topic())),
+        inArray(realtimeMessages.extension, [
+          "presence",
+          "broadcast",
+        ]).inlineParams()
+      )}
+    )`
+    ),
+  }
+).link(realtimeMessages);
+
+export const P2 = pgPolicy(
+  "authenticated can send broadcast and track presence",
+  {
+    for: "insert",
+    to: authenticatedRole,
+    withCheck: exists(
+      sql`(
+      select 1 from ${roomsUsers} where 
+      ${and(
+        eq(roomsUsers.userId, sql.raw(auth.uid())),
+        eq(roomsUsers.roomTopic, sql.raw(realtime.topic())),
+        inArray(realtimeMessages.extension, [
+          "presence",
+          "broadcast",
+        ]).inlineParams()
+      )}
+    )`
+    ),
+  }
+).link(realtimeMessages);

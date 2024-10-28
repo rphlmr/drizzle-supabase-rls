@@ -1,6 +1,6 @@
 "use client";
 import CreateRoomModal from "@/components/create-room-modal";
-import { createDrizzleSupabaseRLSClient } from "@/database/db";
+import { createDrizzleSupabaseClient } from "@/database/db";
 import type { Room } from "@/database/schema";
 import { createClient } from "@/utils/supabase/client";
 import { RealtimeChannel, User } from "@supabase/supabase-js";

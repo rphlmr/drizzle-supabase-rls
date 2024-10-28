@@ -2,7 +2,7 @@ import SupabaseLogo from "@/components/SupabaseLogo";
 import AuthButton from "../components/AuthButton";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
-import { createDrizzleSupabaseRLSClient } from "@/database/db";
+import { createDrizzleSupabaseClient } from "@/database/db";
 
 export default async function Index() {
   const supabase = createClient();

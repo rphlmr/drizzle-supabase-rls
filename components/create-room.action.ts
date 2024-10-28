@@ -1,6 +1,6 @@
 "use server";
 
-import { createDrizzleSupabaseRLSClient } from "@/database/db";
+import { createDrizzleSupabaseClient } from "@/database/db";
 import { rooms, roomsUsers } from "@/database/schema";
 import { createClient } from "@/utils/supabase/server";
 
@@ -9,10 +9,10 @@ export const createRoom = async (formData: FormData) => {
   const user = await supabase.auth.getUser();
   const token = (await supabase.auth.getSession()).data.session!.access_token;
   const topic = formData.get("topic") as string;
-  const db = await createDrizzleSupabaseRLSClient();
+  const db = await createDrizzleSupabaseClient();
 
   try {
-    await db.rls.transaction(async (tx) => {
+    await db.rls(async (tx) => {
       await tx.insert(rooms).values({
         topic,
       });

@@ -12,13 +12,12 @@
     "db:migrate": "dotenv -e .env.local --  drizzle-kit migrate"
   },
   "dependencies": {
-    "@supabase/auth-helpers-nextjs": "^0.9.0",
     "@supabase/ssr": "latest",
     "@supabase/supabase-js": "2.44.0",
     "autoprefixer": "10.4.17",
     "drizzle-orm": "^0.35.3-05e88e4",
     "geist": "^1.2.1",
-    "next": "latest",
+    "next": "^14",
     "postcss": "8.4.33",
     "postgres": "^3.4.5",
     "react": "18.2.0",

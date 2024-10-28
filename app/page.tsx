@@ -1,14 +1,14 @@
-import SupabaseLogo from '@/components/SupabaseLogo'
-import AuthButton from '../components/AuthButton'
-import Link from 'next/link'
-import { createClient } from '@/utils/supabase/server'
+import SupabaseLogo from "@/components/SupabaseLogo";
+import AuthButton from "../components/AuthButton";
+import Link from "next/link";
+import { createClient } from "@/utils/supabase/server";
 
 export default async function Index() {
-  const supabase = createClient()
+  const supabase = createClient();
 
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
 
   return (
     <main className="flex flex-col gap-6 items-center h-full mt-40">
@@ -26,5 +26,5 @@ export default async function Index() {
         <AuthButton />
       )}
     </main>
-  )
+  );
 }

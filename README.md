@@ -15,10 +15,24 @@ Each room restricts the number of users authorized by applying RLS Policies appl
 1. `supabase start`
 2. Create a `.env.local` file with the required variables by running `cp .env.example .env.local`.
 3. [Create a new Supabase project](https://supabase.com/dashboard/new/_).
-4. Refer to the [Database Setup](#database-setup) section to create the necessary tables and policies.
+4. Create a new postgres user with `authenticator` role.
+  ```sql
+  CREATE USER drizzle_rls
+  WITH
+    LOGIN PASSWORD 'your_strong_password';
+
+  GRANT anon TO drizzle_rls;
+
+  GRANT authenticated TO drizzle_rls;
+  ```
 5. Copy the project's `URL` and `anon` API key from your project's [API Settings](https://supabase.com/dashboard/project/_/settings/api), and paste them into your `.env.local`.
-6. `npm install`
-7. `npm run dev`
+6. Copy the database url from your project's [Database Settings](https://supabase.com/dashboard/project/_/settings/database), and paste it into your `.env.local` as `ADMIN_DATABASE_URL`.
+7. Define the `DATABASE_URL` in your `.env.local` with the database url from your project's [Database Settings](https://supabase.com/dashboard/project/_/settings/database) and the `drizzle_rls` user credentials.
+   ```
+   DATABASE_URL=postgresql://drizzle_rls:your_strong_password@db_url:db_port/postgres
+   ```
+8. `npm install`
+9.  `npm run dev`
 
 ## How It Looks
 

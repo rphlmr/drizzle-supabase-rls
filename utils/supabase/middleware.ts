@@ -29,6 +29,16 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
+  if (
+    request.nextUrl.pathname.startsWith("/protected") &&
+    !(await supabase.auth.getUser()).data.user
+  ) {
+    // no user, potentially respond by redirecting the user to the login page
+    const url = request.nextUrl.clone();
+    url.pathname = "/";
+    return NextResponse.redirect(url);
+  }
+
   // This will refresh session if expired - required for Server Components
   // https://supabase.com/docs/guides/auth/server-side/nextjs
   await supabase.auth.getUser();

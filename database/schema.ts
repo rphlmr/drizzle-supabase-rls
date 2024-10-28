@@ -95,6 +95,8 @@ export const rooms = pgTable(
   ]
 ).enableRLS();
 
+export type Room = typeof rooms.$inferSelect;
+
 export const profiles = pgTable(
   "profiles",
   {

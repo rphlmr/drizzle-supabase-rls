@@ -9,7 +9,7 @@ const base = "./database";
 export default defineConfig({
   dialect: "postgresql",
   dbCredentials: {
-    url: process.env.DATABASE_URL!,
+    url: process.env.ADMIN_DATABASE_URL!,
   },
   schema: `${base}/schema.ts`,
   out: `${base}/migrations`,

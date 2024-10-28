@@ -1,13 +1,11 @@
 "use client";
-import CreateRoomModal from "@/components/create-room-modal";
-import { createDrizzleSupabaseClient } from "@/database/db";
 import type { Room } from "@/database/schema";
 import { createClient } from "@/utils/supabase/client";
 import { RealtimeChannel, User } from "@supabase/supabase-js";
-import { revalidatePath } from "next/cache";
-import { useRouter } from "next/navigation";
-import { useState, useEffect, use, cache } from "react";
-import { addUserToChannel } from "./actions";
+import { redirect, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { addUserToChannel, createRoom } from "./actions";
+import { SubmitButton } from "@/components/submit-button";
 
 export default function Chat({ rooms }: { rooms: Room[] }) {
   const router = useRouter();
@@ -61,6 +59,7 @@ export default function Chat({ rooms }: { rooms: Room[] }) {
         supabase.realtime.setAuth(token);
         supabase
           .channel("supaslack")
+          .on("broadcast", { event: "new_room" }, () => router.refresh())
           .on("broadcast", { event: "new_room" }, () => router.refresh())
           .subscribe();
       })
@@ -220,6 +219,46 @@ export default function Chat({ rooms }: { rooms: Room[] }) {
           </form>
         </div>
       </div>
+    </div>
+  );
+}
+
+function CreateRoomModal() {
+  const close = () => {
+    redirect(`/protected`);
+  };
+
+  return (
+    <div className="fixed top-0 left-0 right-0 flex flex-col h-full w-full justify-center items-center align-middle gap-2 z-10 bg-[#000000EE]">
+      <form className="flex flex-col sm:max-w-md gap-2 text-foreground bg-background rounded-md p-4">
+        <label className="text-lg font-semibold" htmlFor="email">
+          Create a Room
+        </label>
+        <input
+          className="rounded-md px-4 py-2 bg-inherit border mb-6"
+          name="topic"
+          placeholder="room_1"
+        />
+        <div className="flex justify-between gap-4">
+          <SubmitButton
+            formAction={async (formData) => {
+              await createRoom(formData);
+              close();
+            }}
+            className="border border-foreground/20 rounded-md px-4 py-2 text-foreground mb-2 w-[10rem]"
+            pendingText="Creating"
+          >
+            Create Room
+          </SubmitButton>
+          <SubmitButton
+            formAction={close}
+            className="border border-foreground/20 rounded-md px-4 py-2 text-foreground mb-2 w-[10rem]"
+            pendingText="Closing"
+          >
+            Close
+          </SubmitButton>
+        </div>
+      </form>
     </div>
   );
 }

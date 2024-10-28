@@ -1,3 +1,11 @@
-import { drizzle } from "drizzle-orm/postgres-js";
+import { createClient } from "@/utils/supabase/server";
+import { createDrizzleRLSClient } from "./drizzle";
 
-const db = drizzle(process.env.DATABASE_URL!, { casing: "snake_case" });
+// https://github.com/orgs/supabase/discussions/23224
+// Should be secure because we use the access token that is signed, and not the data read directly from the storage
+export async function createDrizzleSupabaseRLSClient() {
+  const {
+    data: { session },
+  } = await createClient().auth.getSession();
+  return createDrizzleRLSClient(session?.access_token ?? "");
+}

@@ -19,7 +19,6 @@ export default function Chat() {
 
   const getChannels = async () => {
     const channels = await supabase.from("rooms").select("topic");
-    console.log(channels);
     setRooms(channels.data?.map(({ topic }) => topic) || []);
   };
 

@@ -15,7 +15,7 @@
     "@supabase/ssr": "latest",
     "@supabase/supabase-js": "2.44.0",
     "autoprefixer": "10.4.17",
-    "drizzle-orm": "^0.35.3-05e88e4",
+    "drizzle-orm": "^0.35.3-b2b714a",
     "geist": "^1.2.1",
     "next": "^14",
     "postcss": "8.4.33",
@@ -30,7 +30,7 @@
     "@types/react": "18.2.48",
     "@types/react-dom": "18.2.18",
     "dotenv-cli": "^7.4.2",
-    "drizzle-kit": "^0.26.2-05e88e4",
+    "drizzle-kit": "^0.26.2-b2b714a",
     "encoding": "^0.1.13"
   },
   "prettier": {}

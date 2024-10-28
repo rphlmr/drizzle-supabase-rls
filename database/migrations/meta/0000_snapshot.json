@@ -1,5 +1,5 @@
 {
-  "id": "473616ac-a7f6-4dc7-942e-f1b2d7afc393",
+  "id": "3ab094bc-f3f4-48e1-8006-aa86a11744fa",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -107,7 +107,7 @@
           "to": [
             "authenticated"
           ],
-          "using": "exists (\n\t\t\t\t\tselect 1 from \"rooms_users\" where \n\t\t\t\t\t(\"rooms_users\".\"user_id\" = (select auth.uid()) and \"rooms_users\".\"room_topic\" = realtime.topic() and \"messages\".\"extension\" in ('presence', 'broadcast'))\n\t\t\t\t)"
+          "withCheck": "exists (\n\t\t\t\t\tselect 1 from \"rooms_users\" where \n\t\t\t\t\t(\"rooms_users\".\"user_id\" = (select auth.uid()) and \"rooms_users\".\"room_topic\" = realtime.topic() and \"messages\".\"extension\" in ('presence', 'broadcast'))\n\t\t\t\t)"
         }
       },
       "checkConstraints": {},

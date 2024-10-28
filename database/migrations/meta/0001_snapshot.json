@@ -1,6 +1,6 @@
 {
-  "id": "14475e7e-934b-448b-9128-2bdbbca13861",
-  "prevId": "473616ac-a7f6-4dc7-942e-f1b2d7afc393",
+  "id": "93afe1e9-2201-4ef7-b97e-8c5a3b6079b5",
+  "prevId": "3ab094bc-f3f4-48e1-8006-aa86a11744fa",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -107,7 +107,7 @@
           "to": [
             "authenticated"
           ],
-          "using": "exists (\n\t\t\t\t\tselect 1 from \"rooms_users\" where \n\t\t\t\t\t(\"rooms_users\".\"user_id\" = (select auth.uid()) and \"rooms_users\".\"room_topic\" = realtime.topic() and \"messages\".\"extension\" in ('presence', 'broadcast'))\n\t\t\t\t)"
+          "withCheck": "exists (\n\t\t\t\t\tselect 1 from \"rooms_users\" where \n\t\t\t\t\t(\"rooms_users\".\"user_id\" = (select auth.uid()) and \"rooms_users\".\"room_topic\" = realtime.topic() and \"messages\".\"extension\" in ('presence', 'broadcast'))\n\t\t\t\t)"
         }
       },
       "checkConstraints": {},

@@ -58,7 +58,7 @@ export const realtimeMessages = realtime.schema.table(
     pgPolicy("authenticated can send broadcast and track presence", {
       for: "insert",
       to: authenticatedRole,
-      using: exists(
+      withCheck: exists(
         sql`(
 					select 1 from ${roomsUsers} where 
 					${and(

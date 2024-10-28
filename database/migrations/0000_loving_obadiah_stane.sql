@@ -49,7 +49,7 @@ CREATE POLICY "authenticated can read broadcast and presence state" ON "realtime
 					select 1 from "rooms_users" where 
 					("rooms_users"."user_id" = (select auth.uid()) and "rooms_users"."room_topic" = realtime.topic() and "messages"."extension" in ('presence', 'broadcast'))
 				));--> statement-breakpoint
-CREATE POLICY "authenticated can send broadcast and track presence" ON "realtime"."messages" AS PERMISSIVE FOR INSERT TO "authenticated" USING (exists (
+CREATE POLICY "authenticated can send broadcast and track presence" ON "realtime"."messages" AS PERMISSIVE FOR INSERT TO "authenticated" WITH CHECK (exists (
 					select 1 from "rooms_users" where 
 					("rooms_users"."user_id" = (select auth.uid()) and "rooms_users"."room_topic" = realtime.topic() and "messages"."extension" in ('presence', 'broadcast'))
 				));--> statement-breakpoint

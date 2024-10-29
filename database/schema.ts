@@ -115,7 +115,10 @@ export const P1 = pgPolicy(
       ${and(
         eq(roomsUsers.userId, authUid),
         eq(roomsUsers.roomTopic, realtimeTopic),
-        inArray(realtimeMessages.extension, ["presence", "broadcast"])
+        inArray(realtimeMessages.extension, [
+          "presence",
+          "broadcast",
+        ]).inlineParams()
       )}
     )`
     ),
@@ -133,7 +136,10 @@ export const P2 = pgPolicy(
       ${and(
         eq(roomsUsers.userId, authUid),
         eq(roomsUsers.roomTopic, realtimeTopic),
-        inArray(realtimeMessages.extension, ["presence", "broadcast"])
+        inArray(realtimeMessages.extension, [
+          "presence",
+          "broadcast",
+        ]).inlineParams()
       )}
     )`
     ),

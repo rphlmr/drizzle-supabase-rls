@@ -15,6 +15,13 @@
       "when": 1730213026837,
       "tag": "0001_equal_leopardon",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1730227938681,
+      "tag": "0002_last_lord_hawal",
+      "breakpoints": true
     }
   ]
 }

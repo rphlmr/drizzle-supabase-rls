@@ -1,4 +1,4 @@
-import { sql, exists, and, eq, inArray } from "drizzle-orm";
+import { sql, exists, and, eq, inArray, getTableColumns } from "drizzle-orm";
 import {
   bigint,
   foreignKey,
@@ -8,6 +8,7 @@ import {
   unique,
   uuid,
   pgPolicy,
+  pgView,
 } from "drizzle-orm/pg-core";
 import {
   authenticatedRole,
@@ -103,6 +104,20 @@ export const roomsUsers = pgTable(
     }),
   ]
 );
+
+export const roomsUsersProfiles = pgView("rooms_users_profiles")
+  .with({
+    securityInvoker: true,
+  })
+  .as((qb) =>
+    qb
+      .select({
+        ...getTableColumns(roomsUsers),
+        email: profiles.email,
+      })
+      .from(roomsUsers)
+      .innerJoin(profiles, eq(roomsUsers.userId, profiles.id))
+  );
 
 export const P1 = pgPolicy(
   "authenticated can read broadcast and presence state",

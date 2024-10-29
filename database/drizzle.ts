@@ -12,10 +12,10 @@ type SupabaseToken = {
   role?: string;
 };
 
-export function createDrizzle<Database extends PgDatabase<any, any, any>>(
-  token: SupabaseToken,
-  { admin, client }: { admin: Database; client: Database }
-) {
+export function createDrizzle<
+  Database extends PgDatabase<any, any, any>,
+  Token extends SupabaseToken = SupabaseToken
+>(token: Token, { admin, client }: { admin: Database; client: Database }) {
   return {
     admin,
     rls: (async (transaction, ...rest) => {

@@ -9,28 +9,15 @@ import {
   uuid,
   pgSchema,
   pgPolicy,
-  pgRole,
-  bigserial,
 } from "drizzle-orm/pg-core";
 import {
   authenticatedRole,
+  authUid,
   authUsers,
   realtimeMessages,
   realtimeTopic,
   supabaseAuthAdminRole,
 } from "drizzle-orm/supabase";
-
-/* ------------------------------ auth schema; ------------------------------ */
-const auth = {
-  schema: pgSchema("auth"),
-  uid: () => "auth.uid()",
-};
-
-/* ------------------------------ realtime schema; ------------------------------ */
-const realtime = {
-  schema: pgSchema("realtime"),
-  topic: () => "realtime.topic()",
-};
 
 /* ------------------------------ public schema; ------------------------------ */
 
@@ -127,8 +114,8 @@ export const P1 = pgPolicy(
       sql`(
       select 1 from ${roomsUsers} where 
       ${and(
-        eq(roomsUsers.userId, sql.raw(`(select ${auth.uid()})`)),
-        eq(roomsUsers.roomTopic, sql.raw(realtime.topic())),
+        eq(roomsUsers.userId, authUid),
+        eq(roomsUsers.roomTopic, realtimeTopic),
         inArray(realtimeMessages.extension, [
           "presence",
           "broadcast",
@@ -148,8 +135,8 @@ export const P2 = pgPolicy(
       sql`(
       select 1 from ${roomsUsers} where 
       ${and(
-        eq(roomsUsers.userId, sql.raw(auth.uid())),
-        eq(roomsUsers.roomTopic, sql.raw(realtime.topic())),
+        eq(roomsUsers.userId, authUid),
+        eq(roomsUsers.roomTopic, realtimeTopic),
         inArray(realtimeMessages.extension, [
           "presence",
           "broadcast",

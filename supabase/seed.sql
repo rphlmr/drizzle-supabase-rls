@@ -1,7 +1,7 @@
-CREATE USER drizzle_rls
+CREATE USER rls_client
 WITH
   LOGIN PASSWORD 'postgres';
 
-GRANT anon TO drizzle_rls;
+GRANT anon TO rls_client;
 
-GRANT authenticated TO drizzle_rls;
+GRANT authenticated TO rls_client;

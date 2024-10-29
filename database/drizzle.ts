@@ -32,6 +32,7 @@ export function createDrizzle<
           select set_config('request.jwt.claim.sub', '${sql.raw(
             token.sub ?? ""
           )}', TRUE);												
+          -- set local role
           set local role ${sql.raw(token.role ?? "anon")};
           `);
           return await transaction(tx);

@@ -7,7 +7,6 @@ import {
   timestamp,
   unique,
   uuid,
-  pgSchema,
   pgPolicy,
 } from "drizzle-orm/pg-core";
 import {
@@ -116,10 +115,7 @@ export const P1 = pgPolicy(
       ${and(
         eq(roomsUsers.userId, authUid),
         eq(roomsUsers.roomTopic, realtimeTopic),
-        inArray(realtimeMessages.extension, [
-          "presence",
-          "broadcast",
-        ]).inlineParams()
+        inArray(realtimeMessages.extension, ["presence", "broadcast"])
       )}
     )`
     ),
@@ -137,10 +133,7 @@ export const P2 = pgPolicy(
       ${and(
         eq(roomsUsers.userId, authUid),
         eq(roomsUsers.roomTopic, realtimeTopic),
-        inArray(realtimeMessages.extension, [
-          "presence",
-          "broadcast",
-        ]).inlineParams()
+        inArray(realtimeMessages.extension, ["presence", "broadcast"])
       )}
     )`
     ),

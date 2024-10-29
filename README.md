@@ -70,7 +70,7 @@ function createDrizzle<
 >(token: Token, { admin, client }: { admin: Database; client: Database })
 ```
 
-> [!NOTE] TLDR
+> [!NOTE]
 > `createDrizzle` exposes the same API as the drizzle-orm client but also includes an `rls` method.
 >
 > This `rls` method is a `transaction` (from `client`) on which we set the necessary configuration for Supabase to handle RLS.

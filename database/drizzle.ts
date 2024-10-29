@@ -1,8 +1,16 @@
-import type { JwtPayload } from "jwt-decode";
 import { sql } from "drizzle-orm";
 import { PgDatabase } from "drizzle-orm/pg-core";
 
-export type SupabaseToken = JwtPayload & { role: string };
+type SupabaseToken = {
+  iss?: string;
+  sub?: string;
+  aud?: string[] | string;
+  exp?: number;
+  nbf?: number;
+  iat?: number;
+  jti?: string;
+  role?: string;
+};
 
 export function createDrizzle<Database extends PgDatabase<any, any, any>>(
   token: SupabaseToken,
@@ -24,7 +32,7 @@ export function createDrizzle<Database extends PgDatabase<any, any, any>>(
           select set_config('request.jwt.claim.sub', '${sql.raw(
             token.sub ?? ""
           )}', TRUE);												
-          set local role ${sql.raw(token.role)};
+          set local role ${sql.raw(token.role ?? "anon")};
           `);
           return await transaction(tx);
         } finally {

@@ -10,6 +10,7 @@
     "db:generate": "drizzle-kit generate",
     "db:generate:custom": "drizzle-kit generate --custom",
     "db:migrate": "dotenv -e .env.local --  drizzle-kit migrate",
+    "db:pull": "dotenv -e .env.local -- drizzle-kit pull",
     "db:drop": "drizzle-kit drop"
   },
   "dependencies": {

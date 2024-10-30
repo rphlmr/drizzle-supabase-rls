@@ -133,7 +133,7 @@ const [user] = await db.rls((tx) =>
 // In your Next.js server-side code
 const db = await createDrizzleSupabaseClient();
 
-const [user] = await db.select().from(profiles).where(eq(profiles.email, email));
+const [user] = await db.admin.select().from(profiles).where(eq(profiles.email, email));
 ```
 
 ## Database Setup

@@ -47,15 +47,13 @@ export type Room = typeof rooms.$inferSelect;
 export const profiles = pgTable(
   "profiles",
   {
-    id: uuid().primaryKey().notNull(),
+    id: uuid()
+      .primaryKey()
+      .notNull()
+      .references(() => authUsers.id, { onDelete: "cascade" }),
     email: text().notNull(),
   },
   (table) => [
-    foreignKey({
-      columns: [table.id],
-      foreignColumns: [authUsers.id],
-      name: "profiles_id_fk",
-    }).onDelete("cascade"),
     pgPolicy("authenticated can view all profiles", {
       for: "select",
       to: authenticatedRole,
@@ -65,6 +63,12 @@ export const profiles = pgTable(
       for: "insert",
       to: supabaseAuthAdminRole,
       withCheck: sql`true`,
+    }),
+    pgPolicy("owner can update profile", {
+      for: "update",
+      to: authenticatedRole,
+      using: eq(table.id, authUid),
+      withCheck: eq(table.id, authUid),
     }),
   ]
 );

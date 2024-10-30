@@ -1,1 +1,0 @@
-CREATE VIEW "public"."rooms_users_profiles" WITH (security_invoker = true) AS (select "rooms_users"."user_id", "rooms_users"."room_topic", "rooms_users"."joined_at", "profiles"."email" from "rooms_users" inner join "profiles" on "rooms_users"."user_id" = "profiles"."id");

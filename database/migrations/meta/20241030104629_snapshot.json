@@ -1,6 +1,6 @@
 {
-  "id": "4424af6d-d609-4885-86ce-17d25949711e",
-  "prevId": "0ab18a56-d894-4da6-8e6c-543916789391",
+  "id": "fb6a144f-540b-4ccd-8f18-d068e28206e3",
+  "prevId": "c0742fe1-90c0-4bd8-8a0a-96a0838c7cd3",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -23,8 +23,8 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "profiles_id_fk": {
-          "name": "profiles_id_fk",
+        "profiles_id_users_id_fk": {
+          "name": "profiles_id_users_id_fk",
           "tableFrom": "profiles",
           "columnsFrom": [
             "id"
@@ -58,6 +58,16 @@
             "supabase_auth_admin"
           ],
           "withCheck": "true"
+        },
+        "owner can update profile": {
+          "name": "owner can update profile",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"profiles\".\"id\" = (select auth.uid())",
+          "withCheck": "\"profiles\".\"id\" = (select auth.uid())"
         }
       },
       "checkConstraints": {},
@@ -208,7 +218,45 @@
   },
   "enums": {},
   "schemas": {},
-  "views": {},
+  "views": {
+    "public.rooms_users_profiles": {
+      "name": "rooms_users_profiles",
+      "schema": "public",
+      "columns": {
+        "userId": {
+          "name": "userId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "roomTopic": {
+          "name": "roomTopic",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "joinedAt": {
+          "name": "joinedAt",
+          "type": "timestamp(3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "definition": "select \"rooms_users\".\"user_id\", \"rooms_users\".\"room_topic\", \"rooms_users\".\"joined_at\", \"profiles\".\"email\" from \"rooms_users\" inner join \"profiles\" on \"rooms_users\".\"user_id\" = \"profiles\".\"id\"",
+      "materialized": false,
+      "with": {
+        "securityInvoker": true
+      },
+      "isExisting": false
+    }
+  },
   "sequences": {},
   "roles": {},
   "policies": {

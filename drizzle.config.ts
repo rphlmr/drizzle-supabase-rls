@@ -16,6 +16,9 @@ export default defineConfig({
   verbose: false,
   schemaFilter: ["public"],
   casing: "snake_case",
+  migrations: {
+    prefix: "timestamp",
+  },
   entities: {
     roles: {
       provider: "supabase",
